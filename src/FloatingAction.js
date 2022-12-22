@@ -18,6 +18,7 @@ import AddIcon from "./AddIcon";
 
 import { isIphoneX } from "./utils/platform";
 import { getTouchableComponent, getRippleProps } from "./utils/touchable";
+import LinearGradient from 'react-native-linear-gradient';
 
 const DEVICE_WIDTH = Dimensions.get("window").width;
 
@@ -409,9 +410,15 @@ class FloatingAction extends Component {
     }
 
     const Touchable = getTouchableComponent();
+    const withGradientBackground = !!this.props.gradientProps && !active;
+
     const propStyles = {
-      backgroundColor: mainButtonColor,
-      bottom: this.mainBottomAnimation // I need to imporove this to run on native thread and not on JS thread
+      ...(withGradientBackground
+        ? {}
+        : {
+            backgroundColor: mainButtonColor,
+          }),
+      bottom: this.mainBottomAnimation, // I need to imporove this to run on native thread and not on JS thread
     };
 
     if (["left", "right"].indexOf(position) > -1) {
@@ -428,6 +435,11 @@ class FloatingAction extends Component {
       right: buttonSize + 16
     }
 
+    const WrapperComp = withGradientBackground ? LinearGradient : View;
+    const WrapperCompProps = withGradientBackground
+      ? this.props.gradientProps
+      : {};
+
     return (
       <Animated.View
         style={[
@@ -436,7 +448,7 @@ class FloatingAction extends Component {
           styles[`${position}Button`],
           propStyles,
           animatedVisibleView,
-          this.getShadow()
+          this.getShadow(),
         ]}
         accessible
         accessibilityLabel="Floating Action Button"
@@ -447,24 +459,29 @@ class FloatingAction extends Component {
           activeOpacity={active ? 0.4 : 0.85}
           onPress={this.animateButton}
         >
-          <Animated.View
-            style={[styles.buttonTextContainer, sizeStyle, animatedViewStyle]}
+          <WrapperComp
+            {...WrapperCompProps}
+            style={[sizeStyle, { justifyContent: 'center' }]}
           >
-            {this.getIcon()}
-          </Animated.View>
-          {active && activeLabel ? (
-            <View
-              style={[
-                styles.activeLabelWrapper,
-                activeLabelWrapperPositionStyle,
-                this.getShadow(),
-              ]}
+            <Animated.View
+              style={[styles.buttonTextContainer, sizeStyle, animatedViewStyle]}
             >
-              <Text numberOfLines={1} style={styles.activeLabelTxt}>
-                {activeLabel}
-              </Text>
-            </View>
-          ) : null}
+              {this.getIcon()}
+            </Animated.View>
+            {active && activeLabel ? (
+              <View
+                style={[
+                  styles.activeLabelWrapper,
+                  activeLabelWrapperPositionStyle,
+                  this.getShadow(),
+                ]}
+              >
+                <Text numberOfLines={1} style={styles.activeLabelTxt}>
+                  {activeLabel}
+                </Text>
+              </View>
+            ) : null}
+          </WrapperComp>
         </Touchable>
       </Animated.View>
     );
