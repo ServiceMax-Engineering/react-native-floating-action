@@ -1,9 +1,9 @@
 // Type definitions for react-native-floating-action
 
-declare module "react-native-floating-action" {
-  import { Component } from "react";
+declare module 'react-native-floating-action' {
+  import { Component } from 'react';
 
-  type positionType = "right" | "left" | "center";
+  type positionType = 'right' | 'left' | 'center';
 
   type shadowType = {
     shadowOpacity?: number;
@@ -15,7 +15,7 @@ declare module "react-native-floating-action" {
     shadowRadius?: number;
   };
 
-  export class FloatingAction extends Component<IFloatingActionProps> { }
+  export class FloatingAction extends Component<IFloatingActionProps> {}
 
   export interface IActionProps {
     color?: string;
@@ -60,5 +60,10 @@ declare module "react-native-floating-action" {
     onOpen?: () => void;
     onStateChange?: () => void;
     animated?: boolean;
+    gradientProps?: {
+      angle?: number;
+      colors: string[];
+      useAngle?: boolean;
+    };
   }
 }
