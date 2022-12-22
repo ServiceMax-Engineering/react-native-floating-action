@@ -1,6 +1,8 @@
 import React, { Component } from "react"; // eslint-disable-line
 import PropTypes from "prop-types";
 import {
+  View,
+  Text,
   StyleSheet,
   Image,
   Animated,
@@ -335,7 +337,8 @@ class FloatingAction extends Component {
       color,
       position,
       overrideWithAction,
-      animated
+      animated,
+      activeLabel
     } = this.props;
     const { active } = this.state;
 
@@ -421,6 +424,10 @@ class FloatingAction extends Component {
       borderRadius: buttonSize / 2
     };
 
+    const activeLabelWrapperPositionStyle = {
+      right: buttonSize + 16
+    }
+
     return (
       <Animated.View
         style={[
@@ -437,7 +444,7 @@ class FloatingAction extends Component {
         <Touchable
           {...getRippleProps(mainButtonColor)}
           style={[styles.button, sizeStyle]}
-          activeOpacity={0.85}
+          activeOpacity={active ? 0.4 : 0.85}
           onPress={this.animateButton}
         >
           <Animated.View
@@ -445,6 +452,19 @@ class FloatingAction extends Component {
           >
             {this.getIcon()}
           </Animated.View>
+          {active && activeLabel ? (
+            <View
+              style={[
+                styles.activeLabelWrapper,
+                activeLabelWrapperPositionStyle,
+                this.getShadow(),
+              ]}
+            >
+              <Text numberOfLines={1} style={styles.activeLabelTxt}>
+                {activeLabel}
+              </Text>
+            </View>
+          ) : null}
         </Touchable>
       </Animated.View>
     );
@@ -679,7 +699,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     elevation: 5,
-    position: "absolute"
+    position: "absolute",
+    overflow: "visible"
   },
   button: {
     zIndex: 3,
@@ -695,7 +716,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
-  }
+  },
+  activeLabelWrapper: {
+    position: 'absolute',
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    elevation: 5,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+  },
+  activeLabelTxt: {
+    width: '100%',
+    color: '#444',
+    fontSize: 14,
+    lineHeight: 20,
+    paddingVertical: 2,
+  },
 });
 
 export default FloatingAction;
