@@ -65,5 +65,6 @@ declare module 'react-native-floating-action' {
       colors: string[];
       useAngle?: boolean;
     };
+    activeLabel?: string;
   }
 }
