@@ -66,5 +66,6 @@ declare module 'react-native-floating-action' {
       useAngle?: boolean;
     };
     activeLabel?: string;
+    activeIcon?: JSX.Element
   }
 }

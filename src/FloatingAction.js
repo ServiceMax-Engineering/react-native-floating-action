@@ -187,8 +187,12 @@ class FloatingAction extends Component {
       iconWidth,
       iconHeight,
       iconColor,
+      activeIcon
     } = this.props;
-
+    const {active} = this.state;
+    if (active && React.isValidElement(activeIcon)) {
+      return activeIcon;
+    }
     if (overrideWithAction) {
       const { icon } = actions[0];
 
