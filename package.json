@@ -30,7 +30,8 @@
   "peerDependencies": {
     "prop-types": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-linear-gradient": "*"
   },
   "devDependencies": {
     "babel-eslint": "10.0.1",

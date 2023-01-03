@@ -1,6 +1,8 @@
 import React, { Component } from "react"; // eslint-disable-line
 import PropTypes from "prop-types";
 import {
+  View,
+  Text,
   StyleSheet,
   Image,
   Animated,
@@ -16,6 +18,7 @@ import AddIcon from "./AddIcon";
 
 import { isIphoneX } from "./utils/platform";
 import { getTouchableComponent, getRippleProps } from "./utils/touchable";
+import LinearGradient from 'react-native-linear-gradient';
 
 const DEVICE_WIDTH = Dimensions.get("window").width;
 
@@ -184,8 +187,12 @@ class FloatingAction extends Component {
       iconWidth,
       iconHeight,
       iconColor,
+      activeIcon
     } = this.props;
-
+    const {active} = this.state;
+    if (active && React.isValidElement(activeIcon)) {
+      return activeIcon;
+    }
     if (overrideWithAction) {
       const { icon } = actions[0];
 
@@ -335,7 +342,8 @@ class FloatingAction extends Component {
       color,
       position,
       overrideWithAction,
-      animated
+      animated,
+      activeLabel
     } = this.props;
     const { active } = this.state;
 
@@ -406,9 +414,15 @@ class FloatingAction extends Component {
     }
 
     const Touchable = getTouchableComponent();
+    const withGradientBackground = !!this.props.gradientProps && !active;
+
     const propStyles = {
-      backgroundColor: mainButtonColor,
-      bottom: this.mainBottomAnimation // I need to imporove this to run on native thread and not on JS thread
+      ...(withGradientBackground
+        ? {}
+        : {
+            backgroundColor: mainButtonColor,
+          }),
+      bottom: this.mainBottomAnimation, // I need to imporove this to run on native thread and not on JS thread
     };
 
     if (["left", "right"].indexOf(position) > -1) {
@@ -421,6 +435,15 @@ class FloatingAction extends Component {
       borderRadius: buttonSize / 2
     };
 
+    const activeLabelWrapperPositionStyle = {
+      right: buttonSize + 16
+    }
+
+    const WrapperComp = withGradientBackground ? LinearGradient : View;
+    const WrapperCompProps = withGradientBackground
+      ? this.props.gradientProps
+      : {};
+
     return (
       <Animated.View
         style={[
@@ -429,7 +452,7 @@ class FloatingAction extends Component {
           styles[`${position}Button`],
           propStyles,
           animatedVisibleView,
-          this.getShadow()
+          this.getShadow(),
         ]}
         accessible
         accessibilityLabel="Floating Action Button"
@@ -437,14 +460,32 @@ class FloatingAction extends Component {
         <Touchable
           {...getRippleProps(mainButtonColor)}
           style={[styles.button, sizeStyle]}
-          activeOpacity={0.85}
+          activeOpacity={active ? 0.4 : 0.85}
           onPress={this.animateButton}
         >
-          <Animated.View
-            style={[styles.buttonTextContainer, sizeStyle, animatedViewStyle]}
+          <WrapperComp
+            {...WrapperCompProps}
+            style={[sizeStyle, { justifyContent: 'center' }]}
           >
-            {this.getIcon()}
-          </Animated.View>
+            <Animated.View
+              style={[styles.buttonTextContainer, sizeStyle, animatedViewStyle]}
+            >
+              {this.getIcon()}
+            </Animated.View>
+            {active && activeLabel ? (
+              <View
+                style={[
+                  styles.activeLabelWrapper,
+                  activeLabelWrapperPositionStyle,
+                  this.getShadow(),
+                ]}
+              >
+                <Text numberOfLines={1} style={styles.activeLabelTxt}>
+                  {activeLabel}
+                </Text>
+              </View>
+            ) : null}
+          </WrapperComp>
         </Touchable>
       </Animated.View>
     );
@@ -679,7 +720,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     elevation: 5,
-    position: "absolute"
+    position: "absolute",
+    overflow: "visible"
   },
   button: {
     zIndex: 3,
@@ -695,7 +737,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
-  }
+  },
+  activeLabelWrapper: {
+    position: 'absolute',
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    elevation: 5,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+  },
+  activeLabelTxt: {
+    width: '100%',
+    color: '#444',
+    fontSize: 14,
+    lineHeight: 20,
+    paddingVertical: 2,
+  },
 });
 
 export default FloatingAction;

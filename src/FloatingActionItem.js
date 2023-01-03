@@ -287,10 +287,10 @@ const styles = StyleSheet.create({
     height: 22
   },
   leftTextContainer: {
-    marginLeft: 14
+    marginLeft: 20
   },
   rightTextContainer: {
-    marginRight: 14
+    marginRight: 20
   },
   text: {
     fontSize: 14,
